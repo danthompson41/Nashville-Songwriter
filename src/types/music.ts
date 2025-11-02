@@ -40,3 +40,22 @@ export const CHORD_QUALITIES: ChordQuality[] = [
   'min7',
   'dim7'
 ];
+
+// Default chord quality for each degree in a major scale
+// I = Major, ii = minor, iii = minor, IV = Major, V = Major, vi = minor, vii° = diminished
+export function getDefaultChordQuality(degree: number): ChordQuality {
+  switch (degree) {
+    case 1:
+    case 4:
+    case 5:
+      return 'major';
+    case 2:
+    case 3:
+    case 6:
+      return 'minor';
+    case 7:
+      return 'diminished';
+    default:
+      return 'major';
+  }
+}

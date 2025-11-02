@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChordCell, NashvilleChord, ChordQuality, CHORD_QUALITIES } from '../types/music';
+import { ChordCell, NashvilleChord, ChordQuality, CHORD_QUALITIES, getDefaultChordQuality } from '../types/music';
 
 interface ChordGridProps {
   grid: ChordCell[][];
@@ -98,17 +98,23 @@ export default function ChordGrid({ grid, onGridChange }: ChordGridProps) {
           <h3>Edit Cell (Row {selectedCell.row + 1}, Col {selectedCell.col + 1})</h3>
 
           <div className="degree-selector">
-            <label>Degree:</label>
+            <label>Degree (Nashville Notation):</label>
             <div className="degree-buttons">
-              {[1, 2, 3, 4, 5, 6, 7].map((degree) => (
-                <button
-                  key={degree}
-                  className="degree-btn"
-                  onClick={() => handleChordInput(degree, 'major')}
-                >
-                  {degree}
-                </button>
-              ))}
+              {[1, 2, 3, 4, 5, 6, 7].map((degree) => {
+                const defaultQuality = getDefaultChordQuality(degree);
+                const qualityHint = defaultQuality === 'minor' ? 'm' :
+                                   defaultQuality === 'diminished' ? '°' : '';
+                return (
+                  <button
+                    key={degree}
+                    className="degree-btn"
+                    onClick={() => handleChordInput(degree, defaultQuality)}
+                    title={`Degree ${degree} (${defaultQuality})`}
+                  >
+                    {degree}{qualityHint}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

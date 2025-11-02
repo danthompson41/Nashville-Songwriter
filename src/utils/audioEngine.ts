@@ -46,7 +46,7 @@ export class AudioEngine {
   private initAudio() {
     this.audioContext = new AudioContext();
     this.masterGain = this.audioContext.createGain();
-    this.masterGain.gain.value = 0.3;
+    this.masterGain.gain.value = 0.2; // Lower master gain to prevent clipping
     this.masterGain.connect(this.audioContext.destination);
   }
 
@@ -80,6 +80,13 @@ export class AudioEngine {
     const frequencies = this.nashvilleToFrequencies(chord, key);
     const now = this.audioContext.currentTime;
 
+    // ADSR envelope timing
+    const attackTime = 0.05; // 50ms smooth attack
+    const releaseTime = 0.1; // 100ms smooth release
+    const sustainTime = Math.max(0.1, duration - attackTime - releaseTime);
+    const peakGain = 0.15 / frequencies.length; // Lower gain per note
+    const sustainGain = peakGain * 0.7; // 70% of peak for sustain
+
     frequencies.forEach((freq, index) => {
       const oscillator = this.audioContext!.createOscillator();
       const gainNode = this.audioContext!.createGain();
@@ -87,16 +94,18 @@ export class AudioEngine {
       oscillator.type = 'sine';
       oscillator.frequency.value = freq;
 
-      // Envelope
-      gainNode.gain.setValueAtTime(0, now);
-      gainNode.gain.linearRampToValueAtTime(0.2 / frequencies.length, now + 0.01);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+      // Smooth ADSR envelope to prevent clicking/crackling
+      gainNode.gain.setValueAtTime(0.001, now); // Start from near-zero (can't be exactly 0 for exponential)
+      gainNode.gain.exponentialRampToValueAtTime(peakGain, now + attackTime);
+      gainNode.gain.exponentialRampToValueAtTime(sustainGain, now + attackTime + 0.05);
+      gainNode.gain.exponentialRampToValueAtTime(sustainGain, now + attackTime + sustainTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration); // Smooth release to near-zero
 
       oscillator.connect(gainNode);
       gainNode.connect(this.masterGain!);
 
       oscillator.start(now);
-      oscillator.stop(now + duration);
+      oscillator.stop(now + duration + 0.1); // Stop slightly after release completes
     });
   }
 

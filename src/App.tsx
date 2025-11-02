@@ -44,7 +44,8 @@ function App() {
       </div>
 
       <footer className="app-footer">
-        <p>Nashville notation: 1 = Tonic, 2 = Supertonic, 3 = Mediant, 4 = Subdominant, 5 = Dominant, 6 = Submediant, 7 = Leading tone</p>
+        <p>Nashville notation in major key: I (1-Major) • ii (2-minor) • iii (3-minor) • IV (4-Major) • V (5-Major) • vi (6-minor) • vii° (7-diminished)</p>
+        <p className="instruction">Degrees default to their diatonic qualities but can be modified using the quality selector</p>
       </footer>
     </main>
   );
