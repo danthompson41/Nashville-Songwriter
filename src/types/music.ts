@@ -16,14 +16,54 @@ export interface ChordCell {
   duration: number; // in beats
 }
 
+export type SectionType = 'Verse' | 'Chorus' | 'Bridge' | 'Pre-Chorus' | 'Intro' | 'Outro' | 'Instrumental' | 'Solo' | 'Custom';
+
+export const SECTION_TYPES: SectionType[] = [
+  'Verse',
+  'Chorus',
+  'Bridge',
+  'Pre-Chorus',
+  'Intro',
+  'Outro',
+  'Instrumental',
+  'Solo',
+  'Custom'
+];
+
+export const SECTION_COLORS: Record<SectionType, string> = {
+  'Verse': '#4a9eff',
+  'Chorus': '#ff6b6b',
+  'Bridge': '#51cf66',
+  'Pre-Chorus': '#ffd43b',
+  'Intro': '#a78bfa',
+  'Outro': '#a78bfa',
+  'Instrumental': '#ff9500',
+  'Solo': '#ff9500',
+  'Custom': '#888'
+};
+
+export interface Section {
+  id: string;
+  type: SectionType;
+  name: string; // e.g., "Verse 1", "Chorus", "Bridge"
+  lyrics: string;
+  measures: ChordCell[][]; // Each measure is an array of ChordCells (typically 4 beats)
+}
+
 export interface Song {
+  id: string;
+  title: string;
+  artist: string;
   key: Note;
   tempo: number; // BPM
   timeSignature: {
     numerator: number;
     denominator: number;
   };
-  grid: ChordCell[][];
+  sections: Section[];
+  createdAt: string;
+  updatedAt: string;
+  notes?: string;
 }
 
 export const NOTES: Note[] = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];

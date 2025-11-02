@@ -1,34 +1,36 @@
-import { Note } from '../types/music';
+import { Song, Note, NOTES } from '../types/music';
 
 interface TransportBarProps {
+  song: Song;
   isPlaying: boolean;
   isPaused: boolean;
   onPlay: () => void;
   onPause: () => void;
   onStop: () => void;
-  tempo: number;
-  onTempoChange: (tempo: number) => void;
-  songKey: Note;
-  onKeyChange: (key: Note) => void;
-  currentBeat: number;
-  totalBeats: number;
+  onSongUpdate: (song: Song) => void;
+  currentPosition: { sectionIndex: number; measureIndex: number; beatIndex: number } | null;
 }
 
 export default function TransportBar({
+  song,
   isPlaying,
   isPaused,
   onPlay,
   onPause,
   onStop,
-  tempo,
-  onTempoChange,
-  songKey,
-  onKeyChange,
-  currentBeat,
-  totalBeats
+  onSongUpdate,
+  currentPosition
 }: TransportBarProps) {
-  const currentMeasure = Math.floor(currentBeat / 4) + 1;
-  const currentBeatInMeasure = (currentBeat % 4) + 1;
+  const handleTempoChange = (tempo: number) => {
+    onSongUpdate({ ...song, tempo });
+  };
+
+  const handleKeyChange = (key: Note) => {
+    onSongUpdate({ ...song, key });
+  };
+
+  const currentMeasure = currentPosition ? currentPosition.measureIndex + 1 : 1;
+  const currentBeatInMeasure = currentPosition ? currentPosition.beatIndex + 1 : 1;
 
   return (
     <div className="transport-bar">
@@ -76,8 +78,8 @@ export default function TransportBar({
           className="tempo-input"
           min="40"
           max="240"
-          value={tempo}
-          onChange={(e) => onTempoChange(Number(e.target.value))}
+          value={song.tempo}
+          onChange={(e) => handleTempoChange(Number(e.target.value))}
           disabled={isPlaying}
         />
       </div>
@@ -87,11 +89,11 @@ export default function TransportBar({
         <select
           id="transport-key"
           className="key-select"
-          value={songKey}
-          onChange={(e) => onKeyChange(e.target.value as Note)}
+          value={song.key}
+          onChange={(e) => handleKeyChange(e.target.value as Note)}
           disabled={isPlaying}
         >
-          {['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'].map((note) => (
+          {NOTES.map((note) => (
             <option key={note} value={note}>
               {note}
             </option>
