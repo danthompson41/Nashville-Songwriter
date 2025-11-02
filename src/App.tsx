@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./App.css";
-import KeySelector from "./components/KeySelector";
+import TransportBar from "./components/TransportBar";
 import ChordGrid from "./components/ChordGrid";
 import AudioPreview from "./components/AudioPreview";
 import { Note, ChordCell } from "./types/music";
@@ -15,37 +15,50 @@ function App() {
     Array(4).fill(null).map(() => ({ chord: null, duration: 1 })),
   ]);
 
+  // Use the AudioPreview hook for playback control
+  const playback = AudioPreview({
+    songKey,
+    grid,
+    tempo,
+    onTempoChange: setTempo
+  });
+
+  const totalBeats = grid.flat().length;
+
   return (
-    <main className="container">
-      <header className="app-header">
-        <h1>Nashville Songwriter DAW</h1>
-        <p className="subtitle">Write chords in Nashville notation and preview in any key</p>
+    <main className="daw-container">
+      <header className="daw-header">
+        <div className="app-title">
+          <h1>Nashville Number System DAW</h1>
+        </div>
       </header>
 
-      <div className="controls-section">
-        <KeySelector selectedKey={songKey} onKeyChange={setSongKey} />
-      </div>
+      <TransportBar
+        isPlaying={playback.isPlaying}
+        isPaused={playback.isPaused}
+        onPlay={playback.handlePlay}
+        onPause={playback.handlePause}
+        onStop={playback.handleStop}
+        tempo={tempo}
+        onTempoChange={setTempo}
+        songKey={songKey}
+        onKeyChange={setSongKey}
+        currentBeat={playback.currentBeat}
+        totalBeats={totalBeats}
+      />
 
-      <div className="main-content">
-        <div className="grid-section">
-          <h2>Chord Grid</h2>
-          <p className="instruction">Click a cell to select it, then choose a degree (1-7) and quality</p>
-          <ChordGrid grid={grid} onGridChange={setGrid} />
-        </div>
-
-        <div className="preview-section">
-          <AudioPreview
-            songKey={songKey}
+      <div className="daw-main">
+        <div className="arrangement-section">
+          <ChordGrid
             grid={grid}
-            tempo={tempo}
-            onTempoChange={setTempo}
+            onGridChange={setGrid}
+            currentBeat={playback.isPlaying ? playback.currentBeat : undefined}
           />
         </div>
       </div>
 
-      <footer className="app-footer">
-        <p>Nashville notation in major key: I (1-Major) • ii (2-minor) • iii (3-minor) • IV (4-Major) • V (5-Major) • vi (6-minor) • vii° (7-diminished)</p>
-        <p className="instruction">Degrees default to their diatonic qualities but can be modified using the quality selector</p>
+      <footer className="daw-footer">
+        <p>Nashville Number System: I (1) • ii (2m) • iii (3m) • IV (4) • V (5) • vi (6m) • vii° (7°)</p>
       </footer>
     </main>
   );
