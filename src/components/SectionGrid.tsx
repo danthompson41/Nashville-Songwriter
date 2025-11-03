@@ -11,6 +11,8 @@ interface SectionGridProps {
   onDeleteSection: () => void;
   canDelete: boolean;
   currentBeat?: { sectionIndex: number; measureIndex: number; beatIndex: number };
+  selectedCell?: { sectionIndex: number; measureIndex: number; beatIndex: number };
+  onCellClick?: (sectionIndex: number, measureIndex: number, beatIndex: number) => void;
 }
 
 export default function SectionGrid({
@@ -20,9 +22,10 @@ export default function SectionGrid({
   onDuplicateSection,
   onDeleteSection,
   canDelete,
-  currentBeat
+  currentBeat,
+  selectedCell,
+  onCellClick
 }: SectionGridProps) {
-  const [selectedCell, setSelectedCell] = useState<{ measureIndex: number; beatIndex: number } | null>(null);
 
   const updateCell = (measureIndex: number, beatIndex: number, chord: NashvilleChord | null) => {
     const newMeasures = section.measures.map((measure, mIdx) =>
@@ -41,21 +44,11 @@ export default function SectionGrid({
   };
 
   const handleCellClick = (measureIndex: number, beatIndex: number) => {
-    setSelectedCell({ measureIndex, beatIndex });
-  };
-
-  const handleChordInput = (degree: number, quality: ChordQuality) => {
-    if (selectedCell) {
-      const chord: NashvilleChord = { degree, quality };
-      updateCell(selectedCell.measureIndex, selectedCell.beatIndex, chord);
+    if (onCellClick) {
+      onCellClick(sectionIndex, measureIndex, beatIndex);
     }
   };
 
-  const clearCell = () => {
-    if (selectedCell) {
-      updateCell(selectedCell.measureIndex, selectedCell.beatIndex, null);
-    }
-  };
 
   const handleAddMeasure = () => {
     const updatedSection = addMeasureToSection(section);
@@ -88,7 +81,8 @@ export default function SectionGrid({
   };
 
   const isSelected = (measureIndex: number, beatIndex: number) => {
-    return selectedCell?.measureIndex === measureIndex &&
+    return selectedCell?.sectionIndex === sectionIndex &&
+           selectedCell?.measureIndex === measureIndex &&
            selectedCell?.beatIndex === beatIndex;
   };
 
@@ -139,66 +133,6 @@ export default function SectionGrid({
         </button>
       </div>
 
-      {selectedCell && (
-        <div className="inspector-panel">
-          <h3>Inspector</h3>
-          <div className="inspector-cell-info">
-            <span className="inspector-label">Section:</span>
-            <span>{section.name}</span>
-          </div>
-          <div className="inspector-cell-info">
-            <span className="inspector-label">Measure:</span>
-            <span>{selectedCell.measureIndex + 1}</span>
-          </div>
-          <div className="inspector-cell-info">
-            <span className="inspector-label">Beat:</span>
-            <span>{selectedCell.beatIndex + 1}</span>
-          </div>
-
-          <div className="inspector-section degree-selector">
-            <label className="inspector-section-label">Nashville Number:</label>
-            <div className="degree-buttons">
-              {[1, 2, 3, 4, 5, 6, 7].map((degree) => {
-                const defaultQuality = getDefaultChordQuality(degree);
-                const qualityHint = defaultQuality === 'minor' ? 'm' :
-                                   defaultQuality === 'diminished' ? '°' : '';
-                return (
-                  <button
-                    key={degree}
-                    className="degree-btn"
-                    onClick={() => handleChordInput(degree, defaultQuality)}
-                    title={`Degree ${degree} (${defaultQuality})`}
-                  >
-                    {degree}{qualityHint}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="inspector-section quality-selector">
-            <label className="inspector-section-label">Chord Quality:</label>
-            <div className="quality-buttons">
-              {CHORD_QUALITIES.map((quality) => (
-                <button
-                  key={quality}
-                  className="quality-btn"
-                  onClick={() => {
-                    const currentDegree = section.measures[selectedCell.measureIndex][selectedCell.beatIndex].chord?.degree || 1;
-                    handleChordInput(currentDegree, quality);
-                  }}
-                >
-                  {quality}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <button className="clear-btn" onClick={clearCell}>
-            Clear Cell
-          </button>
-        </div>
-      )}
     </div>
   );
 }

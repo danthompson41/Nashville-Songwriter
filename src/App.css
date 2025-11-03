@@ -390,12 +390,12 @@
   display: flex;
   overflow: hidden;
   background: #1a1a1a;
+  position: relative;
 }
 
 .arrangement-section {
   flex: 1;
   display: flex;
-  flex-direction: column;
   overflow: hidden;
 }
 
@@ -403,7 +403,7 @@
 .chord-grid-container {
   flex: 1;
   display: flex;
-  gap: 1rem;
+  flex-direction: column;
   padding: 1rem;
   overflow: hidden;
 }
@@ -622,13 +622,17 @@
 
 /* Inspector Panel */
 .inspector-panel {
-  width: 280px;
-  flex-shrink: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 320px;
   background: #252525;
-  border: 1px solid #333;
-  border-radius: 6px;
-  padding: 1rem;
+  border-left: 1px solid #333;
+  padding: 1.5rem;
   overflow-y: auto;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.3);
+  z-index: 100;
 }
 
 .inspector-panel h3 {
@@ -717,6 +721,128 @@
 .clear-btn:hover {
   background: #ff9500;
   color: #fff;
+}
+
+/* Chord Input */
+.chord-cell.editing {
+  padding: 0;
+  border: 2px solid #4a9eff !important;
+}
+
+.chord-input {
+  width: 100%;
+  height: 100%;
+  padding: 0.25rem;
+  background: #1a1a1a;
+  border: none;
+  color: #fff;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  outline: none;
+}
+
+.chord-input::placeholder {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+/* Direct Input Section */
+.direct-input-section {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1a2f4a 100%);
+  border: 2px solid #4a9eff;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(74, 158, 255, 0.3);
+}
+
+.direct-input-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #4a9eff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.direct-input-wrapper {
+  position: relative;
+}
+
+.direct-chord-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #0a1520;
+  border: 2px solid #2a4e7a;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.direct-chord-input:focus {
+  border-color: #4a9eff;
+  background: #0d1925;
+  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.2);
+}
+
+.direct-chord-input::placeholder {
+  color: #6a8aa8;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.input-hint {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #4a9eff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #0a1520;
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.direct-chord-input:focus ~ .input-hint {
+  opacity: 1;
+}
+
+/* Quick Help */
+.quick-help {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
+}
+
+.quick-help p {
+  margin: 0 0 0.5rem 0;
+  color: #4a9eff;
+  font-weight: 600;
+}
+
+.quick-help ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #aaa;
+}
+
+.quick-help li {
+  margin: 0.25rem 0;
+}
+
+.quick-help strong {
+  color: #ddd;
 }
 
 /* Footer */
@@ -1078,13 +1204,18 @@
 
 /* Responsive */
 @media (max-width: 1200px) {
-  .chord-grid-container {
-    flex-direction: column;
-  }
-
   .inspector-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
     width: 100%;
-    max-height: 300px;
+    height: 40vh;
+    max-height: 400px;
+    border-left: none;
+    border-top: 1px solid #333;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
   }
 
   .measure {
